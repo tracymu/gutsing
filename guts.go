@@ -4,11 +4,12 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"html/template"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Inside handler")
-	fmt.Fprintf(w, "Hello World from my Go program")
+	t, _ := template.ParseFiles("main.html")
+	t.Execute(w, r) // I put r here, because it needs 2 arguments, but I have no idea why this is ok
 }
 
 func main() {
