@@ -5,7 +5,7 @@ import (
 	"github.com/gedex/go-instagram/instagram"
 	"html/template"
 	"net/http"
-	"reflect"
+	// "reflect"
 	"strings"
 	// "io/ioutil"
 	// "encoding/json"
@@ -29,39 +29,24 @@ func homeQuery(w http.ResponseWriter, r *http.Request) {
 
 func manipulateStuff(food []string) {
 	s := food
-
-	// s := []string{"foo", "bar", "baz"}
-	// fmt.Println(s)
 	s = strings.Split(s[0], " ")
-	// fmt.Println(strings.Join(s, ""))
 	callInstagram(strings.Join(s, ""))
 }
 
 func callInstagram(query string) {
 	client := instagram.NewClient(nil)
 
-	media, next, err := client.Tags.RecentMedia(query, nil)
-	// media, next, err := client.Users.RecentMedia("3", nil)
-	fmt.Println(reflect.TypeOf(media))
-	fmt.Println(next)
-	fmt.Println(err)
-	// I guess if don't want to use next and err, use _ in the assignment line.
+	media, _, _ := client.Tags.RecentMedia(query, nil)
+	pics := [20]string{}
+	index := 0
+	for index < len(media) {
+		pics[index] = media[index].Images.LowResolution.URL
+		index += 1
+	}
 }
-
-type Tag struct {
-	MediaCount int    `json:"media_count,omitempty"`
-	Name       string `json:"name,omitempty"`
-}
-
-// func (c *Client) NewRequest('method', urlStr string, body string) (*http.Request, error)
-
-// func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error)
 
 func main() {
 	http.HandleFunc("/results", resultsHandler)
 	http.HandleFunc("/", homeQuery)
 	http.ListenAndServe("localhost:3000", nil)
 }
-
-// what are locations vs geographies?
-//  https://godoc.org/github.com/gedex/go-instagram/instagram
