@@ -6,13 +6,12 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
-	"math/rand"
 )
 
 var pics = [20]string{}
 
 type Pic struct {
-	UrlArray string
+	Images template.HTML
 }
 
 func homeQuery(w http.ResponseWriter, r *http.Request) {
@@ -22,19 +21,20 @@ func homeQuery(w http.ResponseWriter, r *http.Request) {
 	} else {
 		r.ParseForm()
 		manipulateStuff(r.Form["food"])
+		http.Redirect(w,r,"/results", http.StatusFound)
 	}
-	http.Redirect(w,r,"/results", http.StatusFound)
 }
 
 func resultsHandler(w http.ResponseWriter, r *http.Request) {	
-	random_pic := pics[rand.Intn(len(pics))]
-	result_pics := Pic{random_pic}
+	html := ""
+
+  for _, pic := range pics {
+ 	  html += fmt.Sprintf("<div><img src='%v' /></div>", pic)
+   }
+
+  result_pics := Pic{template.HTML(html)}
 	template, _ := template.ParseFiles("results.html")
 	template.Execute(w, result_pics)
-
-	fmt.Println("here in results handlre fucntion")
-	fmt.Println(result_pics.UrlArray[0])
-
 }
 
 
